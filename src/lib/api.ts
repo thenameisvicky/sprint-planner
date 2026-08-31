@@ -154,7 +154,7 @@ export const apiService = {
 
   // Sprint CRUD
   getSprints: async (projectId: string): Promise<Sprint[]> => {
-    const res = await fetchApi(`cycles?project_id=eq.${projectId}&order=name.asc`);
+    const res = await fetchApi(`sprints?project_id=eq.${projectId}&order=name.asc`);
     const data = await res.json();
     return data.map(mapSprintToFrontend);
   },
@@ -165,7 +165,7 @@ export const apiService = {
       id: 's_' + Math.random().toString(36).substr(2, 9),
       status: 'draft',
     };
-    const res = await fetchApi('cycles', {
+    const res = await fetchApi('sprints', {
       method: 'POST',
       body: JSON.stringify(mapSprintToDb(newSprint)),
       headers: { 'Prefer': 'return=representation' }
@@ -175,7 +175,7 @@ export const apiService = {
   },
 
   updateSprintStatus: async (sprintId: string, status: Sprint['status']): Promise<Sprint | null> => {
-    const res = await fetchApi(`cycles?id=eq.${sprintId}`, {
+    const res = await fetchApi(`sprints?id=eq.${sprintId}`, {
       method: 'PATCH',
       body: JSON.stringify({ status }),
       headers: { 'Prefer': 'return=representation' }
