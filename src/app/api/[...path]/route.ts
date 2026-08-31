@@ -23,7 +23,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
 async function handleProxy(request: NextRequest, pathParts: string[]) {
   // Read target PostgREST API URL from server-side environment variable at RUNTIME
-  const targetBase = process.env.POSTGREST_URL || 'http://localhost:8000';
+  const targetBase = process.env.POSTGREST_URL || 'http://127.0.0.1:8000';
   const path = pathParts.join('/');
   
   // Extract query parameters
@@ -36,6 +36,12 @@ async function handleProxy(request: NextRequest, pathParts: string[]) {
     try {
       body = await request.text();
     } catch (_) {}
+  }
+
+  // Enhanced Request Logging
+  console.log(`[API PROXY] ---> ${request.method} /api/${path}${search}`);
+  if (body) {
+    console.log(`[API PROXY] Payload: ${body}`);
   }
 
   // Get headers from request and forward them
@@ -58,6 +64,12 @@ async function handleProxy(request: NextRequest, pathParts: string[]) {
 
     const resBody = (res.status === 204 || res.status === 304) ? null : await res.text();
     
+    // Enhanced Response Logging
+    console.log(`[API PROXY] <--- ${res.status} ${res.statusText} from ${targetUrl}`);
+    if (resBody && !res.ok) {
+      console.log(`[API PROXY] Error Response Body: ${resBody}`);
+    }
+
     // Create response with same status and headers
     const responseHeaders = new Headers();
     res.headers.forEach((value, key) => {
@@ -70,7 +82,7 @@ async function handleProxy(request: NextRequest, pathParts: string[]) {
       headers: responseHeaders,
     });
   } catch (error: any) {
-    console.error(`Proxy error calling ${targetUrl}:`, error);
+    console.error(`[API PROXY] Error calling ${targetUrl}:`, error);
     return NextResponse.json({ error: 'Failed to connect to backend service' }, { status: 502 });
   }
 }
