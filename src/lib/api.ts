@@ -186,13 +186,13 @@ export const apiService = {
 
   // Task CRUD
   getTasks: async (projectId: string): Promise<Task[]> => {
-    const res = await fetchApi(`issues?project_id=eq.${projectId}&order=sequence_id.asc`);
+    const res = await fetchApi(`tasks?project_id=eq.${projectId}&order=sequence_id.asc`);
     const data = await res.json();
     return data.map(mapTaskToFrontend);
   },
 
   createTask: async (task: Omit<Task, 'id' | 'sequenceId' | 'createdAt' | 'updatedAt'>): Promise<Task> => {
-    const resGet = await fetchApi(`issues?project_id=eq.${task.projectId}`);
+    const resGet = await fetchApi(`tasks?project_id=eq.${task.projectId}`);
     const projectTasks = await resGet.json();
     const nextSeq = projectTasks.length > 0 ? Math.max(...projectTasks.map((t: any) => t.sequence_id)) + 1 : 1;
 
@@ -204,7 +204,7 @@ export const apiService = {
       updatedAt: new Date().toISOString(),
     };
 
-    const res = await fetchApi('issues', {
+    const res = await fetchApi('tasks', {
       method: 'POST',
       body: JSON.stringify(mapTaskToDb(newTask)),
       headers: { 'Prefer': 'return=representation' }
@@ -214,7 +214,7 @@ export const apiService = {
   },
 
   updateTask: async (taskId: string, updates: Partial<Omit<Task, 'id' | 'sequenceId' | 'createdAt'>>): Promise<Task | null> => {
-    const res = await fetchApi(`issues?id=eq.${taskId}`, {
+    const res = await fetchApi(`tasks?id=eq.${taskId}`, {
       method: 'PATCH',
       body: JSON.stringify(mapTaskToDb(updates)),
       headers: { 'Prefer': 'return=representation' }
@@ -224,7 +224,7 @@ export const apiService = {
   },
 
   deleteTask: async (taskId: string): Promise<boolean> => {
-    await fetchApi(`issues?id=eq.${taskId}`, {
+    await fetchApi(`tasks?id=eq.${taskId}`, {
       method: 'DELETE'
     });
     return true;
