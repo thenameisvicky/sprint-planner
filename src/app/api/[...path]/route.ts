@@ -56,7 +56,7 @@ async function handleProxy(request: NextRequest, pathParts: string[]) {
       cache: 'no-store',
     });
 
-    const resBody = await res.text();
+    const resBody = (res.status === 204 || res.status === 304) ? null : await res.text();
     
     // Create response with same status and headers
     const responseHeaders = new Headers();
