@@ -7,14 +7,6 @@ on:
         description: "Enter deployment email"
         required: true
         type: string
-      resource_group:
-        description: "Azure Resource Group Name (optional, defaults to AZURE_RESOURCE_GROUP secret)"
-        required: false
-        type: string
-      container_app_name:
-        description: "Azure Container App Name (optional, defaults to 'planner')"
-        required: false
-        type: string
 
 concurrency:
   group: "pages"
